@@ -74,32 +74,33 @@ void Server::sessionOpened()
 
 void Server::manageDataBase(QString proceededstr) {
     //QMessageBox::warning(this, "", proceededstr);
-    QSqlDatabase dbase = QSqlDatabase::addDatabase("QSQLITE");
-    dbase.setDatabaseName("appbase");
-    if (!dbase.open()) {
-        qDebug() << "works baaaad";
-        return;
-    } else {
+   // QSqlDatabase dbase = QSqlDatabase::addDatabase("QSQLITE");
+   // dbase.setDatabaseName("appbase");
+   // if (!dbase.open()) {
+    //    qDebug() << "works baaaad";
+    //    return;
+    //} else {
         //PARSING INCOMING DATA
         QString device_id = proceededstr.mid(1,9);
         QString coordx = proceededstr.mid(11,9);
         QString coordy = proceededstr.mid(21,9);
         QString call_id = proceededstr.mid(31,1);
         QDate dateString = QDate::currentDate();
-        qDebug()<<dateString;
         QString call_date = dateString.toString("yyyy-MM-dd");
         QTime timeString = QTime::currentTime();
         QString call_time = timeString.toString("hh:mm:ss");
         QString query_string = "insert into apptable values('" + device_id
                 + "', '" + coordx + "', '" + coordy + "', '" + call_id + "', '" +
                 call_date + "', '" + call_time + "');";
-        QSqlQuery mainquery;
-        mainquery.prepare(query_string);
-        if (!mainquery.exec()) {
+        qDebug()<<query_string;
+
+        //   QSqlQuery mainquery;
+       // mainquery.prepare(query_string);
+       // if (!mainquery.exec()) {
             //QMessageBox::warning(this, "Connection error","Error while executing the SQL query");
-        }
-        dbase.close();
-    }
+      //  }
+      //  dbase.close();
+   // }
     return;
 }
 
