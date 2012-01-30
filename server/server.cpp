@@ -37,7 +37,7 @@ sessionOpened();
 void Server::sessionOpened()
 {
     // Save the used configuration
-    if (_networkSession) {
+  /*  if (_networkSession) {
         QNetworkConfiguration config = _networkSession->configuration();
         QString id;
         if (config.type() == QNetworkConfiguration::UserChoice)
@@ -50,7 +50,7 @@ void Server::sessionOpened()
         settings.setValue(QLatin1String("DefaultNetworkConfiguration"), id);
         settings.endGroup();
     }
-
+*/
     _tcpServer = new QTcpServer();
 
     if (!_tcpServer->listen(QHostAddress::Any, 51413)) {
