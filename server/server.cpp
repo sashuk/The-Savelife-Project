@@ -7,8 +7,8 @@
 
 
 Server::Server() : _tcpServer(0), _networkSession(0) {
-
-    QNetworkConfigurationManager manager;
+sessionOpened();
+    //QNetworkConfigurationManager manager;
     /*if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
         // Get saved network configuration
         QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
