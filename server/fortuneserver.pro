@@ -1,9 +1,12 @@
+
 HEADERS       = server.h
 SOURCES       = server.cpp \
                 main.cpp
 QT           += network
 QT           += sql
-
+QT           -= gui
+CONFIG   += console
+CONFIG   -= app_bundle
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/network/fortuneserver
 sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS fortuneserver.pro

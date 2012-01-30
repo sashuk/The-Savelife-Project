@@ -1,33 +1,25 @@
 #ifndef SERVER_H
 #define SERVER_H
-
-#include <QDialog>
-
-QT_BEGIN_NAMESPACE
-class QLabel;
-class QPushButton;
 class QTcpServer;
 class QNetworkSession;
-QT_END_NAMESPACE
+#include <QObject>
+#include <QStringList>
 
-class Server : public QDialog
+class Server : public QObject
 {
-    Q_OBJECT
-
+     Q_OBJECT
 public:
-    Server(QWidget *parent = 0);
+    Server();
 
-private slots:
-    void sessionOpened();
+public slots:
     void sendFortune();
+    void sessionOpened();
+private:
+    QTcpServer *_tcpServer;
+    QStringList _notification;
+    QNetworkSession *_networkSession;
     void manageDataBase(QString);
 
-private:
-    QLabel *statusLabel;
-    QPushButton *quitButton;
-    QTcpServer *tcpServer;
-    QStringList notification;
-    QNetworkSession *networkSession;
 };
 
 #endif

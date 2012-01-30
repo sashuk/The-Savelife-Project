@@ -1,15 +1,12 @@
-#include <QtGui>
 #include <QtNetwork>
 #include <stdlib.h>
 #include <QDateTime>
+#include <QDebug>
 #include <QtSql>
 #include "server.h"
 
 
-Server::Server(QWidget *parent) : QDialog(parent), tcpServer(0), networkSession(0) {
-    statusLabel = new QLabel;
-    quitButton = new QPushButton(tr("Quit"));
-    quitButton->setAutoDefault(false);
+Server::Server() : _tcpServer(0), _networkSession(0) {
 
     QNetworkConfigurationManager manager;
     if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
@@ -26,41 +23,25 @@ Server::Server(QWidget *parent) : QDialog(parent), tcpServer(0), networkSession(
             config = manager.defaultConfiguration();
         }
 
-        networkSession = new QNetworkSession(config, this);
-        connect(networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
-
-        statusLabel->setText(tr("Opening network session."));
-        networkSession->open();
-    } else {
+        _networkSession = new QNetworkSession(config);
+        connect(_networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
+        _networkSession->open();
+        } else {
         sessionOpened();
+        }
 
-        notification << tr("Server is ready for connections on port 1767");
-    }
+        connect(_tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
 
-        connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
-        connect(tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
-
-        QHBoxLayout *buttonLayout = new QHBoxLayout;
-        buttonLayout->addStretch(1);
-        buttonLayout->addWidget(quitButton);
-        buttonLayout->addStretch(1);
-
-        QVBoxLayout *mainLayout = new QVBoxLayout;
-        mainLayout->addWidget(statusLabel);
-        mainLayout->addLayout(buttonLayout);
-        setLayout(mainLayout);
-
-        setWindowTitle(tr("Server-Side App"));
 }
 
 void Server::sessionOpened()
 {
     // Save the used configuration
-    if (networkSession) {
-        QNetworkConfiguration config = networkSession->configuration();
+    if (_networkSession) {
+        QNetworkConfiguration config = _networkSession->configuration();
         QString id;
         if (config.type() == QNetworkConfiguration::UserChoice)
-            id = networkSession->sessionProperty(QLatin1String("UserChoiceConfiguration")).toString();
+            id = _networkSession->sessionProperty(QLatin1String("UserChoiceConfiguration")).toString();
         else
             id = config.identifier();
 
@@ -70,12 +51,9 @@ void Server::sessionOpened()
         settings.endGroup();
     }
 
-    tcpServer = new QTcpServer(this);
-    if (!tcpServer->listen(QHostAddress::Any, 1767)) {
-        QMessageBox::critical(this, tr("Fortune Server"),
-                              tr("Unable to start the server: %1.")
-                              .arg(tcpServer->errorString()));
-        close();
+    _tcpServer = new QTcpServer();
+
+    if (!_tcpServer->listen(QHostAddress::Any, 51413)) {
         return;
     }
     QString ipAddress;
@@ -91,9 +69,6 @@ void Server::sessionOpened()
     // if we did not find one, use IPv4 localhost
     if (ipAddress.isEmpty())
         ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-    statusLabel->setText(tr("The server is running on\n\nIP: %1\nport: %2\n\n"
-                            "Run the Fortune Client example now.")
-                         .arg(ipAddress).arg(tcpServer->serverPort()));
 }
 
 
@@ -111,16 +86,14 @@ void Server::manageDataBase(QString proceededstr) {
         QString coordy = proceededstr.mid(21,9);
         QString call_id = proceededstr.mid(31,1);
         QDate dateString = QDate::currentDate();
+        qDebug()<<dateString;
         QString call_date = dateString.toString("yyyy-MM-dd");
         QTime timeString = QTime::currentTime();
         QString call_time = timeString.toString("hh:mm:ss");
-
-
         QString query_string = "insert into apptable values('" + device_id
                 + "', '" + coordx + "', '" + coordy + "', '" + call_id + "', '" +
                 call_date + "', '" + call_time + "');";
         QSqlQuery mainquery;
-        QMessageBox::warning(this, "", query_string);
         mainquery.prepare(query_string);
         if (!mainquery.exec()) {
             //QMessageBox::warning(this, "Connection error","Error while executing the SQL query");
@@ -132,7 +105,7 @@ void Server::manageDataBase(QString proceededstr) {
 
 
 void Server::sendFortune() {
-    QTcpSocket *socket = tcpServer->nextPendingConnection();
+    QTcpSocket *socket = _tcpServer->nextPendingConnection();
     QDataStream input(socket);
     char *locstring = new char[100];
     uint reqnumber;

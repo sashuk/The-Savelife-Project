@@ -37,7 +37,7 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
+/*
 #include <QApplication>
 #include <QtCore>
 #include <stdlib.h>
@@ -49,10 +49,30 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     Server server;
 #ifdef Q_OS_SYMBIAN
-    server.showMaximized();
+//    server.showMaximized();
 #else
-    server.show();
+//    server.show();
 #endif
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
     return server.exec();
+}*/
+///////////////////////////
+
+#include <QCoreApplication>
+#include <QtCore>
+#include <QDebug>
+#include <stdlib.h>
+#include "server.h"
+
+int main(int argc, char *argv[])
+{
+QCoreApplication app(argc, argv);
+Server server;
+while(true) {
+       QString string = "";
+       int ch;
+   //   while ((ch = getchar()) != '\n')
+    //      string += ch;
+       QCoreApplication::processEvents();
+    }
 }
