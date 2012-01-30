@@ -9,7 +9,7 @@
 Server::Server() : _tcpServer(0), _networkSession(0) {
 
     QNetworkConfigurationManager manager;
-    if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
+    /*if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
         // Get saved network configuration
         QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
         settings.beginGroup(QLatin1String("QtNetwork"));
@@ -28,7 +28,7 @@ Server::Server() : _tcpServer(0), _networkSession(0) {
         _networkSession->open();
         } else {
         sessionOpened();
-        }
+        }*/
 
         connect(_tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
 
