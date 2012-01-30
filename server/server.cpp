@@ -2,55 +2,26 @@
 #include <stdlib.h>
 #include <QDateTime>
 #include <QDebug>
-#include <QtSql>
+#include <QSqlDriver>
+#include <QMYSQLDriver>
 #include "server.h"
 
 
-Server::Server() : _tcpServer(0), _networkSession(0) {
-sessionOpened();
-    //QNetworkConfigurationManager manager;
-    /*if (manager.capabilities() & QNetworkConfigurationManager::NetworkSessionRequired) {
-        // Get saved network configuration
-        QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
-        settings.beginGroup(QLatin1String("QtNetwork"));
-        const QString id = settings.value(QLatin1String("DefaultNetworkConfiguration")).toString();
-        settings.endGroup();
+Server::Server() : _tcpServer(0), _networkSession(0)
+{
+    sessionOpened();
+    connect(_tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
 
-        // If the saved network configuration is not currently discovered use the system default
-        QNetworkConfiguration config = manager.configurationFromIdentifier(id);
-        if ((config.state() & QNetworkConfiguration::Discovered) !=
-            QNetworkConfiguration::Discovered) {
-            config = manager.defaultConfiguration();
-        }
-
-        _networkSession = new QNetworkSession(config);
-        connect(_networkSession, SIGNAL(opened()), this, SLOT(sessionOpened()));
-        _networkSession->open();
-        } else {
-        sessionOpened();
-        }*/
-
-        connect(_tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
-
+    _mySqlDataBase=_mySqlDataBase.addDatabase("QMYSQL");
+    _mySqlDataBase.setHostName("localhost");
+    _mySqlDataBase.setDatabaseName("mobileHelp");
+    _mySqlDataBase.setUserName("mobile");
+    _mySqlDataBase.setPassword("qwe");
+    _mySqlDataBase.open();
 }
 
 void Server::sessionOpened()
 {
-    // Save the used configuration
-  /*  if (_networkSession) {
-        QNetworkConfiguration config = _networkSession->configuration();
-        QString id;
-        if (config.type() == QNetworkConfiguration::UserChoice)
-            id = _networkSession->sessionProperty(QLatin1String("UserChoiceConfiguration")).toString();
-        else
-            id = config.identifier();
-
-        QSettings settings(QSettings::UserScope, QLatin1String("Trolltech"));
-        settings.beginGroup(QLatin1String("QtNetwork"));
-        settings.setValue(QLatin1String("DefaultNetworkConfiguration"), id);
-        settings.endGroup();
-    }
-*/
     _tcpServer = new QTcpServer();
 
     if (!_tcpServer->listen(QHostAddress::Any, 51413)) {
@@ -73,35 +44,21 @@ void Server::sessionOpened()
 
 
 void Server::manageDataBase(QString proceededstr) {
-    //QMessageBox::warning(this, "", proceededstr);
-   // QSqlDatabase dbase = QSqlDatabase::addDatabase("QSQLITE");
-   // dbase.setDatabaseName("appbase");
-   // if (!dbase.open()) {
-    //    qDebug() << "works baaaad";
-    //    return;
-    //} else {
         //PARSING INCOMING DATA
         QString device_id = proceededstr.mid(1,9);
         QString coordx = proceededstr.mid(11,9);
         QString coordy = proceededstr.mid(21,9);
         QString call_id = proceededstr.mid(31,1);
         QDate dateString = QDate::currentDate();
-        QString call_date = dateString.toString("yyyy-MM-dd");
         QTime timeString = QTime::currentTime();
         QString call_time = timeString.toString("hh:mm:ss");
-        QString query_string = "insert into apptable values('" + device_id
-                + "', '" + coordx + "', '" + coordy + "', '" + call_id + "', '" +
-                call_date + "', '" + call_time + "');";
-        qDebug()<<query_string;
-
-        //   QSqlQuery mainquery;
-       // mainquery.prepare(query_string);
-       // if (!mainquery.exec()) {
-            //QMessageBox::warning(this, "Connection error","Error while executing the SQL query");
-      //  }
-      //  dbase.close();
-   // }
-    return;
+        QString call_date = dateString.toString("yyyy-MM-dd");
+        QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\');";
+        _mySqlDataBase.transaction();
+        QSqlQuery query;
+        query.exec(endDb);
+        _mySqlDataBase.commit();
+  return;
 }
 
 

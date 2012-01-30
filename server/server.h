@@ -3,6 +3,8 @@
 class QTcpServer;
 class QNetworkSession;
 #include <QObject>
+#include <QtSql>
+#include <QSqlDatabase>
 #include <QStringList>
 
 class Server : public QObject
@@ -16,7 +18,7 @@ public slots:
     void sessionOpened();
 private:
     QTcpServer *_tcpServer;
-    QStringList _notification;
+    QSqlDatabase _mySqlDataBase;
     QNetworkSession *_networkSession;
     void manageDataBase(QString);
 
