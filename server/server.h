@@ -15,7 +15,6 @@ public:
 
 public slots:
     void sendFortune();
-    void sessionOpened();
 private:
     QTcpServer *_tcpServer;
     QSqlDatabase _mySqlDataBase;
