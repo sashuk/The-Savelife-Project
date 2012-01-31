@@ -24,6 +24,7 @@ Server::Server() : _tcpServer(0), _networkSession(0)
     _mySqlDataBase.setDatabaseName(_mysqlDB);
     _mySqlDataBase.setUserName(_mysqlUser);
     _mySqlDataBase.setPassword(_mysqlPass);
+    qDebug()<<_mySqlDataBase.open();
     settings->setValue("net/port",_port);
     settings->setValue("mysql/hostname",_mysqlHost);
     settings->setValue("mysql/database",_mysqlDB);
