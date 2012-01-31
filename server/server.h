@@ -20,6 +20,12 @@ private:
     QTcpServer *_tcpServer;
     QSqlDatabase _mySqlDataBase;
     QNetworkSession *_networkSession;
+    int _port;
+    QString _mysqlHost;
+    QString _mysqlDB;
+    QString _mysqlUser;
+    QString _mysqlPass;
+
     void manageDataBase(QString);
 
 };

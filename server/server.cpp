@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <QDateTime>
 #include <QDebug>
+#include <QSettings>
 #include <QSqlDriver>
 #include <QMYSQLDriver>
 #include "server.h"
@@ -9,22 +10,33 @@
 
 Server::Server() : _tcpServer(0), _networkSession(0)
 {
+    QSettings *settings = new QSettings("server.conf",QSettings::NativeFormat);
+    _port=settings->value("net/port",5141).toInt();
+    _mysqlHost=settings->value("mysql/hostname","localhost").toString();
+    _mysqlUser=settings->value("mysql/user","").toString();
+    _mysqlPass=settings->value("mysql/password","").toString();
+    _mysqlDB=settings->value("mysql/database","").toString();
+
     sessionOpened();
     connect(_tcpServer, SIGNAL(newConnection()), this, SLOT(sendFortune()));
-
     _mySqlDataBase=_mySqlDataBase.addDatabase("QMYSQL");
-    _mySqlDataBase.setHostName("localhost");
-    _mySqlDataBase.setDatabaseName("mobileHelp");
-    _mySqlDataBase.setUserName("mobile");
-    _mySqlDataBase.setPassword("qwe");
-    _mySqlDataBase.open();
+    _mySqlDataBase.setHostName(_mysqlHost);
+    _mySqlDataBase.setDatabaseName(_mysqlDB);
+    _mySqlDataBase.setUserName(_mysqlUser);
+    _mySqlDataBase.setPassword(_mysqlPass);
+    settings->setValue("net/port",_port);
+    settings->setValue("mysql/hostname",_mysqlHost);
+    settings->setValue("mysql/database",_mysqlDB);
+    settings->setValue("mysql/user",_mysqlUser);
+    settings->setValue("mysql/password",_mysqlPass);
+    settings->sync();
 }
 
 void Server::sessionOpened()
 {
     _tcpServer = new QTcpServer();
 
-    if (!_tcpServer->listen(QHostAddress::Any, 51413)) {
+    if (!_tcpServer->listen(QHostAddress::Any,_port)) {
         return;
     }
     QString ipAddress;
