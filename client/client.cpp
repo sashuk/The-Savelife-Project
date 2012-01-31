@@ -122,14 +122,19 @@ void Client::sessionOpened() {
 }
 
 void Client::sendDataString(QString type) {
+    const QGeoPositionInfo info;
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
     //############RANDOM!!!#################
     //############RANDOM!!!#################
+    positionUpdated(&info);
+
     QString deviceid = "*********";
     QString coordx = "127323.23";
-    QString coordy = "234234.32";
+    QString coordy = "127323.23";
+   // QString coordx = QString::number(info.coordinate().latitude());
+   // QString coordy = QString::number(info.coordinate().longitude());
     //############RANDOM!!!#################
     //############RANDOM!!!#################
     QString rolltoserver = "#" + deviceid + "#" + coordx + "#" + coordy + "#" + type + "#";
@@ -139,3 +144,9 @@ void Client::sendDataString(QString type) {
     tcpSocket->write(block);
     tcpSocket->waitForBytesWritten();
 }
+
+void Client::positionUpdated(const QtMobility::QGeoPositionInfo &info)
+{
+    qDebug()<<"Position updated: "<<info;
+}
+

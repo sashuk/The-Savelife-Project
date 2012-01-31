@@ -3,6 +3,10 @@
 
 #include <QDialog>
 #include <QTcpSocket>
+#include <QGeoPositionInfo>
+#include <QGeoPositionInfoSource>
+
+QTM_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
 class QDialogButtonBox;
@@ -19,7 +23,15 @@ class Client : public QDialog
     Q_OBJECT
 
 public:
-    Client(QWidget *parent = 0);
+    Client(QWidget *parent = 0){
+        QGeoPositionInfoSource *source =
+                QGeoPositionInfoSource::createDefaultSource(this);
+        if(source){
+            connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),
+                    this, SLOT(positionUpdated(QGeoPositionInfo)));
+            source->startUpdates();
+        }
+    }
 
 private slots:
     void displayError(QAbstractSocket::SocketError socketError);
@@ -28,6 +40,7 @@ private slots:
     void pressedUnus();
     void pressedDuo();
     void pressedTres();
+    void positionUpdated(const QGeoPositionInfo &info);
 
 
 private:
@@ -44,6 +57,7 @@ private:
     QString currentFortune;
     quint16 blockSize;
     QNetworkSession *networkSession;
+    QGeoPositionInfo info;
 };
 
 #endif
