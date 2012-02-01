@@ -1,9 +1,20 @@
 body {
 	font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
 }
-.table_headers {
-
+h2 {
+	text-shadow: black 1px 1px 1px, gray 0 0 1em;
 }
+.form_block {
+	font-family:Arial,Helvetica,Garuda,sans-serif;
+	font-size: 12px;
+}
+
 .printing {
 	font-family: 'Arial', serif;
+	font-size:12px;
+}
+
+.table_headers {
+	font-size:12px;
+	text-shadow: black 1px 1px 1px, gray 0 0 1em;
 }

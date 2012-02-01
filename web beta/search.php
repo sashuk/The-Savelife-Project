@@ -8,7 +8,6 @@ $search_date = $_GET['search_date'];
 include_once('config.php');
 $s_link = mysql_connect($db_host, $db_user, $db_pass);
 $s_db_selected = mysql_select_db($db_name, $s_link);
-
 if (($search_id != '') and ($search_date != '')) {
 	$s_sql = 'SELECT * FROM '.$db_table_name.' WHERE `id_device`="'.$search_id.'" and ((`date` < "'.$search_date.' 23:59:59") AND (`date` > "'.$search_date.' 00:00:00"))';
 } elseif (($search_id != '') and ($search_date == '')) {
@@ -18,13 +17,12 @@ if (($search_id != '') and ($search_date != '')) {
 } else {
 	$s_sql = 'SELECT * FROM '.$db_table_name.'';
 }
-
 $s_result = mysql_query($s_sql);
 $s_row = array();
 $i = 0;
 ?>
 <div id="search_res">
-<table border="0">
+<table border="0" width="900">
 <tr class="table_headers">
 <td>Device ID</td>
 <td>Latitude</td>
