@@ -14,7 +14,7 @@ INSTALLS += target sources
 
 symbian {
     include($$PWD/../../symbianpkgrules.pri)
-    TARGET.CAPABILITY = "NetworkServices ReadUserData WriteUserData Location"
+    TARGET.CAPABILITY = "NetworkServices ReadUserData WriteUserData"
     TARGET.EPOCHEAPSIZE = 0x20000 0x2000000
 }
 maemo5: include($$PWD/../../maemo5pkgrules.pri)

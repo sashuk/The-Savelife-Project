@@ -2,7 +2,6 @@
 #include <QtNetwork>
 #include <QDebug>
 #include <QMessageBox>
-#include <fstream>
 
 #include "client.h"
 
@@ -21,22 +20,13 @@ void Client::pressedTres(){
 
 Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
     sysInfo = new QSystemDeviceInfo(this);
-  //  QGeoPositionInfo::QGeoPositionInfo(info);
+    QGeoPositionInfo::QGeoPositionInfo(info);
 
     QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);
-
-    if(source)
-    {
-        positonUpdated(source->lastKnownPosition());
-        source->setUpdateInterval(10000);
-        connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positonUpdated(QGeoPositionInfo)));
-        source->requestUpdate();
-    }
-    else
-    {
-        //нету
-        QMessageBox::warning(this,"GPS is not available","sory");
-    }
+    if(source){
+         connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positonUpdated(QGeoPositionInfo)));
+         source->requestUpdate();
+     }
 
     hostLabel = new QLabel(tr("&Server name:"));
     QString ipAddress;
@@ -108,7 +98,6 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
 
 
 void Client::displayError(QAbstractSocket::SocketError socketError) {
-    return;
     if (socketError) {
 //    case QAbstractSocket::RemoteHostClosedError:
 //        break;
@@ -171,9 +160,8 @@ void Client::sendDataString(QString type) {
     out.setVersion(QDataStream::Qt_4_0);
 
     deviceid = QString(sysInfo->imei());
-    QString rolltoserver = "#" + deviceid + "#" + coordx + "#" + coordy + "#" + "1" + "#";
+    QString rolltoserver = "#" + deviceid + "#" + coordx + "#" + coordy + "#" + type + "#";
     qDebug() << rolltoserver;
-    out << rolltoserver.toLatin1();
     tcpSocket->abort();
     tcpSocket->connectToHost(hostLineEdit->text(), 51413);
     tcpSocket->write(block);
