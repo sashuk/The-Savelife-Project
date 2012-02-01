@@ -47,16 +47,21 @@ Server::Server() : _tcpServer(0)
 void Server::manageDataBase(QString proceededstr)
 {
         //PARSING INCOMING DATA
-        QString device_id = proceededstr.mid(1,9);
-        QString coordx = proceededstr.mid(11,9);
-        QString coordy = proceededstr.mid(21,9);
-        QString call_id = proceededstr.mid(31,1);
+    QRegExp rxlen("#(\\S*)#(\\S*)#(\\S*)#(\\S*)#");
+     int pos = rxlen.indexIn(proceededstr);
+     QStringList list = rxlen.capturedTexts();
+
+     QString device_id = list[1];
+        QString coordx = list[2];
+        QString coordy = list[3];
+        QString call_id = list[4];
         QDate dateString = QDate::currentDate();
         QTime timeString = QTime::currentTime();
         QString call_time = timeString.toString("hh:mm:ss");
         QString call_date = dateString.toString("yyyy-MM-dd");
         QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\');";
         _mySqlDataBase.transaction();
+        qDebug()<<endDb;
         QSqlQuery query;
         query.exec(endDb);
         _mySqlDataBase.commit();
