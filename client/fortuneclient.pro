@@ -4,6 +4,8 @@ SOURCES       = client.cpp \
 QT           += network
 CONFIG += mobility
 MOBILITY += location
+MOBILITY += systeminfo
+MOBILITY += messaging
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/network/fortuneclient
 sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS fortuneclient.pro

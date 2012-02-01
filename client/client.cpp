@@ -6,16 +6,28 @@
 #include "client.h"
 
 void Client::pressedUnus(){
-    sendDataString("1");
+    info_code = 1;
+    sendDataString(QString(info_code));
 }
 void Client::pressedDuo(){
-    sendDataString("2");
+    info_code = 2;
+    sendDataString(QString(info_code));
 }
 void Client::pressedTres(){
-    sendDataString("3");
+    info_code = 3;
+    sendDataString(QString(info_code));
 }
 
 Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
+    sysInfo = new QSystemDeviceInfo(this);
+    QGeoPositionInfo::QGeoPositionInfo(info);
+
+    QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);
+    if(source){
+         connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positonUpdated(QGeoPositionInfo)));
+         source->requestUpdate();
+     }
+
     hostLabel = new QLabel(tr("&Server name:"));
     QString ipAddress;
     QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
@@ -43,10 +55,6 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
 
     buttonBox = new QDialogButtonBox;
     buttonBox->addButton(quitButton, QDialogButtonBox::RejectRole);
-//    buttonBox->addButton(alarmTypeUnus, QDialogButtonBox::ActionRole);
-//    buttonBox->addButton(alarmTypeDuo, QDialogButtonBox::ActionRole);
-//    buttonBox->addButton(alarmTypeTres, QDialogButtonBox::ActionRole);
-
 
     tcpSocket = new QTcpSocket(this);
 
@@ -54,7 +62,6 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
     connect(alarmTypeUnus, SIGNAL(clicked()), this, SLOT(pressedUnus()));
     connect(alarmTypeDuo, SIGNAL(clicked()), this, SLOT(pressedDuo()));
     connect(alarmTypeTres, SIGNAL(clicked()), this, SLOT(pressedTres()));
-    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readFortune()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -85,22 +92,47 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
 
         statusLabel->setText(tr("Opening network session."));
         networkSession->open();
+
     }
 }
 
 
 void Client::displayError(QAbstractSocket::SocketError socketError) {
-    switch (socketError) {
-    case QAbstractSocket::RemoteHostClosedError:
-        break;
-    case QAbstractSocket::HostNotFoundError:
-        QMessageBox::information(this, tr("Fortune Client"), tr("The host was not found. Please check the host name and port settings."));
-        break;
-    case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::information(this, tr("Fortune Client"), tr("The connection was refused by the peer. Make sure the fortune server is running, and check that the host name and port settings are correct."));
-        break;
-    default:
-        QMessageBox::information(this, tr("Fortune Client"), tr("The following error occurred: %1.").arg(tcpSocket->errorString()));
+    if (socketError) {
+//    case QAbstractSocket::RemoteHostClosedError:
+//        break;
+//    case QAbstractSocket::HostNotFoundError:
+//        QMessageBox::information(this, tr("Fortune Client"), tr("The host was not found. Please check the host name and port settings."));
+//        break;
+//    case QAbstractSocket::ConnectionRefusedError:
+//        QMessageBox::information(this, tr("Fortune Client"), tr("The connection was refused by the peer. Make sure the fortune server is running, and check that the host name and port settings are correct."));
+//        break;
+//    default:
+//        //QMessageBox::information(this, tr("Fortune Client"), tr("The following error occurred: %1.").arg(tcpSocket->errorString()));        qDebug() << service.state();
+        addr.setType(QMessageAddress::Phone);
+        addr.setAddressee(QString("+79204023482"));
+        msg.setTo(addr);
+        ///номер сигнала
+        switch(info_code){
+          case  1:
+                msg.setBody("Fire!!!");
+                msg.setType(QMessage::Sms);
+                service.send(msg);
+                qDebug() << service.state();
+                break;
+           case 2:
+                msg.setBody("Pain!!!");
+                msg.setType(QMessage::Sms);
+                service.send(msg);
+                qDebug() << service.state();
+                break;
+           case 3:
+                msg.setBody("Breaking!!!");
+                msg.setType(QMessage::Sms);
+                service.send(msg);
+                qDebug() << service.state();
+                break;
+        }
     }
 }
 
@@ -122,31 +154,24 @@ void Client::sessionOpened() {
 }
 
 void Client::sendDataString(QString type) {
-    const QGeoPositionInfo info;
+    //const QGeoPositionInfo info;
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
-    //############RANDOM!!!#################
-    //############RANDOM!!!#################
-    positionUpdated(&info);
 
-    QString deviceid = "*********";
-    QString coordx = "127323.23";
-    QString coordy = "127323.23";
-   // QString coordx = QString::number(info.coordinate().latitude());
-   // QString coordy = QString::number(info.coordinate().longitude());
-    //############RANDOM!!!#################
-    //############RANDOM!!!#################
+    deviceid = QString(sysInfo->imei());
     QString rolltoserver = "#" + deviceid + "#" + coordx + "#" + coordy + "#" + type + "#";
-    out << rolltoserver.toLatin1();
+    qDebug() << rolltoserver;
     tcpSocket->abort();
-    tcpSocket->connectToHost(hostLineEdit->text(), 1767);
+    tcpSocket->connectToHost(hostLineEdit->text(), 51413);
     tcpSocket->write(block);
     tcpSocket->waitForBytesWritten();
 }
 
-void Client::positionUpdated(const QtMobility::QGeoPositionInfo &info)
+void Client::positonUpdated(const QGeoPositionInfo &info)
 {
-    qDebug()<<"Position updated: "<<info;
+    coordx = QString::number(info.coordinate().latitude());
+    coordy = QString::number(info.coordinate().longitude());
 }
+
 

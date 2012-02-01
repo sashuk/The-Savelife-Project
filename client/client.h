@@ -5,6 +5,10 @@
 #include <QTcpSocket>
 #include <QGeoPositionInfo>
 #include <QGeoPositionInfoSource>
+#include  <QSystemDeviceInfo>
+#include <QMessage>
+#include <QMessageAddress>
+#include <QMessageService>
 
 QTM_USE_NAMESPACE
 
@@ -23,15 +27,11 @@ class Client : public QDialog
     Q_OBJECT
 
 public:
-    Client(QWidget *parent = 0){
-        QGeoPositionInfoSource *source =
-                QGeoPositionInfoSource::createDefaultSource(this);
-        if(source){
-            connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),
-                    this, SLOT(positionUpdated(QGeoPositionInfo)));
-            source->startUpdates();
-        }
-    }
+    Client(QWidget *parent = 0);
+
+public slots:
+    void positonUpdated(const QGeoPositionInfo &info);
+
 
 private slots:
     void displayError(QAbstractSocket::SocketError socketError);
@@ -40,10 +40,13 @@ private slots:
     void pressedUnus();
     void pressedDuo();
     void pressedTres();
-    void positionUpdated(const QGeoPositionInfo &info);
 
 
 private:
+    //Geoposition
+    QString deviceid;
+    QString coordx;
+    QString coordy;
     QLabel *hostLabel;
     QLineEdit *hostLineEdit;
     QLabel *statusLabel;
@@ -57,7 +60,11 @@ private:
     QString currentFortune;
     quint16 blockSize;
     QNetworkSession *networkSession;
-    QGeoPositionInfo info;
+    QSystemDeviceInfo *sysInfo;
+    QMessage msg;
+    QMessageAddress addr;
+    QMessageService service;
+    int info_code;
 };
 
 #endif
