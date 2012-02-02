@@ -31,7 +31,7 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
         positonUpdated(source->lastKnownPosition());
         source->setUpdateInterval(10000);
         connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positonUpdated(QGeoPositionInfo)));
-        source->requestUpdate();
+        source->startUpdates();
     }
     else
     {
