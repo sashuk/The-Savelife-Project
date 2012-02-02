@@ -1,27 +1,4 @@
 ﻿<!DOCTYPE html>
-<html>
-<head>
-<title>Show map</title>
-<link rel="stylesheet" type="text/css" href="sitefiles/style.css" >
-<script src="sitefiles/mod_ajax.js"></script>
-<script>
-var zoom_value = 15;
-function zoomin() {
-	zoom_value = zoom_value + 1;
-	zoom_x = document.getElementById('coorx').innerHTML;
-	zoom_y = document.getElementById('coory').innerHTML;
-	document.getElementById('des_image').src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + zoom_x + ',' + zoom_y + '&zoom=' + zoom_value + '&size=500x500&sensor=true';
-}
-
-function zoomout() {
-	zoom_value = zoom_value - 1;
-	zoom_x = document.getElementById('coorx').innerHTML;
-	zoom_y = document.getElementById('coory').innerHTML;
-	document.getElementById('des_image').src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + zoom_x + ',' + zoom_y + '&zoom=' + zoom_value + '&size=500x500&sensor=true';
-}
-</script>
-</head>
-<body align="center">
 <?php
 include_once('config.php');
 $lat = $_GET['lat'];
@@ -31,12 +8,46 @@ $device_id = $_GET['device_id'];
 if (($lat == '') or ($lgt == '')) echo '<h2>Sorry, there are some troubles with handling request.</h2><br/><br/>';
 $action=$_POST['action'];
 ?>
+
+
+
+<html>
+<head>
+<title>Show map</title>
+<link rel="stylesheet" type="text/css" href="sitefiles/style.css" >
+<script src="sitefiles/mod_ajax.js"></script>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAKWSsSEKm0Rp1BuDpGiBzZxSEd2Kr5ZAXoOcww5bPIl_SSsedURSo5TW0DzY0Lxwhp66Yqk3hz9xNFQ"></script>
+ <script type="text/javascript">
+var markers = [
+ {'x' : <?php echo $lat; ?>, 'y' : <?php echo $lgt; ?>, 'comment' : 'Recorded placement of call'},
+];
+
+function GMapInit() {
+ var map = new GMap2(document.getElementById("GMapContainer"));
+        map.addControl(new GSmallMapControl());
+        map.addControl(new GMapTypeControl());
+
+map.setCenter(new GLatLng(<?php echo $lat; ?>, <?php echo $lgt; ?>), 13); 
+for(i in markers) {
+     map.addOverlay(createMarker(markers[i]['x'],markers[i]['y'],markers[i]['comment']));
+    }
+}
+
+function createMarker(x, y, comment) {
+ var point = new GLatLng(x, y);
+ var marker = new GMarker(point);
+ GEvent.addListener(marker, "click", function() {
+ marker.openInfoWindowHtml(comment);
+ });
+ return marker;
+}
+</script>
+</head>
+<body align="center" onload="GMapInit()" onunload="GUnload()">
+<table border="0" cellspacing="0" cellpadding="0" width="900" align="center"><tr><td>
 <table border="0" width="810"><tr>
 	<td class="map_td" width="510px">
-	<div style="position:relative; height: 500px; width:500px;">
-		<img id="des_image" class="shadowbox" src="http://maps.googleapis.com/maps/api/staticmap?center=<?php echo $lat.','.$lgt; ?>&zoom=15&size=500x500&sensor=true"><br/>
-		<embed src="circle.svg" type="image/svg+xml" width="10" height="10" style="position:absolute; left: 255px; top: 255px">
-	</div>
+		<div class="shadowbox" style="width: 500px; height: 500px" id="GMapContainer"></div>
 	</td>
 	<td class="map_td" width="300" align="left">
 		<div class="info_div" height="500">
@@ -68,7 +79,7 @@ $action=$_POST['action'];
 				}
 				echo '</p>';
 			if ($show_var) {
-				echo '<a href="#" onclick="zoomin();return false;">Zoom in</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onclick="zoomout();return false;">Zoom out</a><br/><br/><a href="#" onclick="window.print();return false;">Print the page</a><br/><br/>';
+				echo '<br/><br/><a href="#" onclick="window.print();return false;">Print the page</a><br/><br/>';
 			}
 			?>
 			<a href="<?php echo $GLOB_mainpage; ?>">Back to the main page</a>
@@ -76,7 +87,7 @@ $action=$_POST['action'];
 		</div>
 	</td>
 </tr></table>
-	
+</td></tr></table>
 
 
 	

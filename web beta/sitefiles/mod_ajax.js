@@ -14,10 +14,17 @@ return request_type;
 var http = createObject();
 
 //Updating the search
-function searchCall() {
-	search_id = encodeURI(document.getElementById('search_id_device').value);
-	search_date = encodeURI(document.getElementById('search_date').value);
-	http.open('get', 'search.php?search_id=' + search_id + '&search_date=' + search_date);
+function searchCall(inc_string) {
+	if (inc_string == 'regular') {
+		search_id = '';
+		search_date = '';
+		search_telephone = '';
+	} else {
+		search_id = encodeURI(document.getElementById('search_id_device').value);
+		search_date = encodeURI(document.getElementById('search_date').value);
+		search_telephone = encodeURI(document.getElementById('search_telephone').value);
+	}
+	http.open('get', 'search.php?search_id=' + search_id + '&search_date=' + search_date + '&search_telephone=' + search_telephone);
 	http.onreadystatechange =  searchNameqReply;
 	http.send(null);
 }
@@ -31,7 +38,6 @@ function searchNameqReply() {
 
 //Updating nofifications
 function showNotification() {
-	numba = document.getElementById('num_of_rows').innerHTML;
 	http.open('get', 'notification.php?numba=' + numba + '');
 	http.onreadystatechange =  findNewEvent;
 	http.send(null);
@@ -42,6 +48,5 @@ function findNewEvent() {
 	var response = http.responseText;
 	document.getElementById('notify_me').innerHTML = response;
 	searchCall();
-	//numba = document.getElementById('num_of_rows').innerHTML;
 }
 }

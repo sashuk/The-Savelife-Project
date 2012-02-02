@@ -6,9 +6,8 @@ $db_user = 'root';
 $db_name = 'project';
 $db_table_name = 'mobi';
 //Site variables
-$GLOB_mainpage = "http://project/";
-
-
+$GLOB_mainpage = $_SERVER['SERVER_NAME'];
+$GLOB_telephone = '89001234567';
 
 //User class
 Class Base {
