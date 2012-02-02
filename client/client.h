@@ -3,11 +3,17 @@
 
 #include <QDialog>
 #include <QTcpSocket>
+
+#ifdef Q_OS_SYMBIAN 
 #include <QGeoPositionInfo>
 #include <QGeoPositionInfoSource>
+#include  <QSystemDeviceInfo>
+#include <QMessage>
+#include <QMessageAddress>
+#include <QMessageService>
 
 QTM_USE_NAMESPACE
-
+#endif
 QT_BEGIN_NAMESPACE
 class QDialogButtonBox;
 class QLabel;
@@ -23,15 +29,12 @@ class Client : public QDialog
     Q_OBJECT
 
 public:
-    Client(QWidget *parent = 0){
-        QGeoPositionInfoSource *source =
-                QGeoPositionInfoSource::createDefaultSource(this);
-        if(source){
-            connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)),
-                    this, SLOT(positionUpdated(QGeoPositionInfo)));
-            source->startUpdates();
-        }
-    }
+    Client(QWidget *parent = 0);
+
+#ifdef Q_OS_SYMBIAN
+public slots:
+    void positonUpdated(const QGeoPositionInfo &info);
+#endif
 
 private slots:
     void displayError(QAbstractSocket::SocketError socketError);
@@ -40,10 +43,13 @@ private slots:
     void pressedUnus();
     void pressedDuo();
     void pressedTres();
-    void positionUpdated(const QGeoPositionInfo &info);
 
 
 private:
+    //Geoposition
+    QString deviceid;
+    QString coordx;
+    QString coordy;
     QLabel *hostLabel;
     QLineEdit *hostLineEdit;
     QLabel *statusLabel;
@@ -57,7 +63,13 @@ private:
     QString currentFortune;
     quint16 blockSize;
     QNetworkSession *networkSession;
-    QGeoPositionInfo info;
+#ifdef Q_OS_SYMBIAN
+    QSystemDeviceInfo *sysInfo;
+    QMessage msg;
+    QMessageAddress addr;
+    QMessageService service;
+#endif
+    int info_code;
 };
 
 #endif

@@ -20,6 +20,7 @@ void Client::pressedTres(){
 }
 
 Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
+#ifdef Q_OS_SYMBIAN
     sysInfo = new QSystemDeviceInfo(this);
   //  QGeoPositionInfo::QGeoPositionInfo(info);
 
@@ -37,6 +38,10 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
         //нету
         QMessageBox::warning(this,"GPS is not available","sory");
     }
+#else
+     coordx=QString::number(999);
+     coordy=QString::number(999);
+#endif
 
     hostLabel = new QLabel(tr("&Server name:"));
     QString ipAddress;
@@ -108,7 +113,6 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
 
 
 void Client::displayError(QAbstractSocket::SocketError socketError) {
-    return;
     if (socketError) {
 //    case QAbstractSocket::RemoteHostClosedError:
 //        break;
@@ -120,6 +124,7 @@ void Client::displayError(QAbstractSocket::SocketError socketError) {
 //        break;
 //    default:
 //        //QMessageBox::information(this, tr("Fortune Client"), tr("The following error occurred: %1.").arg(tcpSocket->errorString()));        qDebug() << service.state();
+#ifdef Q_OS_SYMBIAN
         addr.setType(QMessageAddress::Phone);
         addr.setAddressee(QString("+79204023482"));
         msg.setTo(addr);
@@ -144,6 +149,7 @@ void Client::displayError(QAbstractSocket::SocketError socketError) {
                 qDebug() << service.state();
                 break;
         }
+#endif
     }
 }
 
@@ -165,14 +171,30 @@ void Client::sessionOpened() {
 }
 
 void Client::sendDataString(QString type) {
-    //const QGeoPositionInfo info;
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
 
+#ifdef Q_OS_SYMBIAN
     deviceid = QString(sysInfo->imei());
+#else
+    deviceid=QString("desktop");
+#endif
     QString rolltoserver = "#" + deviceid + "#" + coordx + "#" + coordy + "#" + "1" + "#";
     qDebug() << rolltoserver;
+
+    #ifdef Q_OS_SYMBIAN
+        addr.setType(QMessageAddress::Phone);
+            //#############KOSTIL'##################
+        addr.setAddressee(QString("+79204023482"));
+        msg.setTo(addr);
+        msg.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy +
+                    " , Call id: " + type + ", IMEI: " + deviceid);
+        msg.setType(QMessage::Sms);
+        service.send(msg);
+        qDebug() << service.state();
+#endif
+
     out << rolltoserver.toLatin1();
     tcpSocket->abort();
     tcpSocket->connectToHost(hostLineEdit->text(), 51413);
@@ -180,10 +202,11 @@ void Client::sendDataString(QString type) {
     tcpSocket->waitForBytesWritten();
 }
 
+#ifdef Q_OS_SYMBIAN
 void Client::positonUpdated(const QGeoPositionInfo &info)
 {
     coordx = QString::number(info.coordinate().latitude());
     coordy = QString::number(info.coordinate().longitude());
 }
-
+#endif
 
