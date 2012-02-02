@@ -59,7 +59,8 @@ void Server::manageDataBase(QString proceededstr)
         QTime timeString = QTime::currentTime();
         QString call_time = timeString.toString("hh:mm:ss");
         QString call_date = dateString.toString("yyyy-MM-dd");
-        QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\');";
+        if(call_id.length()>0&&device_id.length()>0)
+            QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\');";
         _mySqlDataBase.transaction();
         qDebug()<<endDb;
         QSqlQuery query;
