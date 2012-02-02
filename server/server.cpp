@@ -46,25 +46,30 @@ Server::Server() : _tcpServer(0)
 
 void Server::manageDataBase(QString proceededstr)
 {
-        //PARSING INCOMING DATA
-    QRegExp rxlen("#(\\S*)#(\\S*)#(\\S*)#(\\S*)#");
-     int pos = rxlen.indexIn(proceededstr);
-     QStringList list = rxlen.capturedTexts();
-
-     QString device_id = list[1];
-        QString coordx = list[2];
-        QString coordy = list[3];
-        QString call_id = list[4];
-        QDate dateString = QDate::currentDate();
-        QTime timeString = QTime::currentTime();
-        QString call_time = timeString.toString("hh:mm:ss");
-        QString call_date = dateString.toString("yyyy-MM-dd");
-        QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\');";
-        _mySqlDataBase.transaction();
-        QSqlQuery query;
-        if(call_id.length()>0&&device_id.length()>0)
-            query.exec(endDb);
-        _mySqlDataBase.commit();
+    //PARSING INCOMING DATA
+    QRegExp rxlen("#(\\S*)#(\\S*)#(\\S*)#(\\S*)#(\\S*)#");
+    int pos = rxlen.indexIn(proceededstr);
+    if(pos==-1)
+        rxlen.setPattern("#(\\S*)#(\\S*)#(\\S*)#(\\S*)#");
+    int posnew = rxlen.indexIn(proceededstr);
+    QStringList list=rxlen.capturedTexts();
+    QString device_id = list[1];
+    QString coordx = list[2];
+    QString coordy = list[3];
+    QString call_id = list[4];
+    QString telephone;
+    if(pos!=-1)
+        telephone= list[5];
+    QDate dateString = QDate::currentDate();
+    QTime timeString = QTime::currentTime();
+    QString call_time = timeString.toString("hh:mm:ss");
+    QString call_date = dateString.toString("yyyy-MM-dd");
+    QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`,`telephone`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\',\'"+telephone+"\');";
+    _mySqlDataBase.transaction();
+    QSqlQuery query;
+    if(call_id.length()>0&&device_id.length()>0)
+        query.exec(endDb);
+    _mySqlDataBase.commit();
 }
 
 void Server::sendFortune()
