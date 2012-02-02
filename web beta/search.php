@@ -1,7 +1,4 @@
-﻿<!DOCTYPE html>
-<html>
-<body>
-<?php
+﻿<?php
 $search_id = $_GET['search_id'];
 $search_date = $_GET['search_date'];
 
@@ -9,9 +6,9 @@ include_once('config.php');
 $s_link = mysql_connect($db_host, $db_user, $db_pass);
 $s_db_selected = mysql_select_db($db_name, $s_link);
 if (($search_id != '') and ($search_date != '')) {
-	$s_sql = 'SELECT * FROM '.$db_table_name.' WHERE `id_device`="'.$search_id.'" and ((`date` < "'.$search_date.' 23:59:59") AND (`date` > "'.$search_date.' 00:00:00"))';
+	$s_sql = 'SELECT * FROM '.$db_table_name.' WHERE `id_device`="'.$search_id.'%" and ((`date` < "'.$search_date.' 23:59:59") AND (`date` > "'.$search_date.' 00:00:00"))';
 } elseif (($search_id != '') and ($search_date == '')) {
-	$s_sql = 'SELECT * FROM '.$db_table_name.' WHERE `id_device`="'.$search_id.'"';
+	$s_sql = 'SELECT * FROM '.$db_table_name.' WHERE `id_device` like "'.$search_id.'%"';
 } elseif (($search_id == '') and ($search_date != '')) {
 	$s_sql = 'SELECT * FROM '.$db_table_name.' WHERE ((`date` < "'.$search_date.' 23:59:59") AND (date > "'.$search_date.' 00:00:00"))';
 } else {
@@ -23,6 +20,7 @@ $i = 0;
 ?>
 <div id="search_res">
 <table border="0" width="900">
+<tr><td colspan="6"><hr></td></tr>
 <tr class="table_headers">
 <td>Device ID</td>
 <td>Latitude</td>
@@ -45,14 +43,12 @@ if ($s_result) {
 			$s_row[$i]['type'] = $s_res['type'];
 				echo '<td>'.$s_row[$i]['type'].'</td>';		
 			$s_row[$i]['date'] = $s_res['date']; 
-				echo '<td>'.$s_row[$i]['date'].'</td>';
-			echo '<td><a href="map.php?lat='.$s_row[$i]['x'].'&lgt='.$s_row[$i]['y'].'&action=show">Show Map</a></td>';	
+				echo '<td>'.Base::dateTransform($s_row[$i]['date']).'</td>';
+			echo '<td><a target="_blank" href="map.php?lat='.$s_row[$i]['x'].'&lgt='.$s_row[$i]['y'].'&action=show&date='.$s_row[$i]['date'].'&device_id='.$row[$i]['id_device'].'">Show Map</a></td>';	
 			echo '</tr>';
 			$i++;
 	}
 }
 mysql_close($s_link);
-echo '</table>Total: '.$i.' results';
+echo '<tr><td colspan="6"><hr></td></tr></table><div class="table_headers"><div class="table_headers">Total: <span id="num_of_rows">'.$i.'</span> results</div></div>';
 ?>
-</body>
-</html>

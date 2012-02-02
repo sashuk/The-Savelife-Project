@@ -2,8 +2,63 @@ body {
 	font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
 }
 h2 {
-	text-shadow: black 1px 1px 1px, gray 0 0 1em;
+	text-shadow: black 2px 2px 2px; /*, red 0 0 0.4em;*/
 }
+h5 {
+	font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+	font-size:10px;
+}
+p {
+	font-size:14px;
+}
+a {
+	color:#696969;
+}
+a:hover, a:active {
+	color:#000;
+}
+a:visited {
+	color:#A020F0;
+}
+a.false_link {
+	color:#000;
+	text-decoration: none;
+	border-bottom: 1px dashed #000;
+}
+
+
+.notification {
+	background: rgba(23, 23, 23, 0.5);
+	padding: 10px 10px 10px 10px;
+	width:150px;
+	height:30px;
+	font-family:Arial,Helvetica,Garuda,sans-serif;
+	font-size:22px;
+	text-align:center;
+	color: #FFF;
+	background: rgba(23, 23, 23, 0.5); /* фон блока */
+    -moz-border-radius: 11px; /* закругление для старых Mozilla Firefox */
+    -webkit-border-radius: 11px; /* закругление для старых Chrome и Safari */
+    border-radius: 11px; /* закругление углов для всех, кто понимает */
+    padding: 8px; /* внутренние отступы */
+    -moz-box-shadow: 0 0 6px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 0 6px rgba(0,0,0,0.5);
+    box-shadow: 0 0 6px rgba(0,0,0,0.5);
+}
+
+
+.info_div {
+	height:490px;
+    background: #F5F5F5; /* фон блока */
+    -moz-border-radius: 10px; /* закругление для старых Mozilla Firefox */
+    -webkit-border-radius: 10px; /* закругление для старых Chrome и Safari */
+    border-radius: 10px; /* закругление углов для всех, кто понимает */
+    padding: 5px; /* внутренние отступы */
+    -moz-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
 .form_block {
 	font-family:Arial,Helvetica,Garuda,sans-serif;
 	font-size: 12px;
@@ -16,5 +71,14 @@ h2 {
 
 .table_headers {
 	font-size:12px;
-	text-shadow: black 1px 1px 1px, gray 0 0 1em;
+	text-shadow: black 0px 0px 0px, gray 0 0 0.3em;
+}
+.map_td {
+	vertical-align:top;
+}
+.shadowbox {
+    -moz-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+
 }
