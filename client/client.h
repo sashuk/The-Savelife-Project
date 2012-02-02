@@ -43,9 +43,12 @@ private slots:
     void pressedUnus();
     void pressedDuo();
     void pressedTres();
-
-
 private:
+    void readSettings(); //читай настройка
+    void writeSettings(); //пиши настройка
+protected:
+    void closeEvent(QCloseEvent *);
+
     //Geoposition
     QString deviceid;
     QString coordx;
@@ -70,6 +73,8 @@ private:
     QMessageService service;
 #endif
     int info_code;
+    QString sIpAddress_; //адрес сервера
+    QString sTelephone_; //номер человека
 };
 
 #endif
