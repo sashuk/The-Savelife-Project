@@ -20,6 +20,7 @@ void Client::pressedTres(){
 }
 
 Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
+    readSettings();
 #ifdef Q_OS_SYMBIAN
     sysInfo = new QSystemDeviceInfo(this);
   //  QGeoPositionInfo::QGeoPositionInfo(info);
@@ -44,19 +45,8 @@ Client::Client(QWidget *parent) : QDialog(parent), networkSession(0) {
 #endif
 
     hostLabel = new QLabel(tr("&Server name:"));
-    QString ipAddress;
-    QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
-    for (int i = 0; i < ipAddressesList.size(); ++i) {
-        if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
-            ipAddressesList.at(i).toIPv4Address()) {
-            ipAddress = ipAddressesList.at(i).toString();
-            break;
-        }
-    }
-    if (ipAddress.isEmpty())
-        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-
-    hostLineEdit = new QLineEdit(ipAddress);
+    
+    hostLineEdit = new QLineEdit(sIpAddress_);
     hostLabel->setBuddy(hostLineEdit);
 
     statusLabel = new QLabel(tr(""));
@@ -126,7 +116,7 @@ void Client::displayError(QAbstractSocket::SocketError socketError) {
 //        //QMessageBox::information(this, tr("Fortune Client"), tr("The following error occurred: %1.").arg(tcpSocket->errorString()));        qDebug() << service.state();
 #ifdef Q_OS_SYMBIAN
         addr.setType(QMessageAddress::Phone);
-        addr.setAddressee(QString("+79204023482"));
+        addr.setAddressee(QString(""));
         msg.setTo(addr);
         ///номер сигнала
         switch(info_code){
@@ -186,7 +176,7 @@ void Client::sendDataString(QString type) {
     #ifdef Q_OS_SYMBIAN
         addr.setType(QMessageAddress::Phone);
             //#############KOSTIL'##################
-        addr.setAddressee(QString("+79204023482"));
+        addr.setAddressee(sTelephone_);
         msg.setTo(addr);
         msg.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy +
                     " , Call id: " + type + ", IMEI: " + deviceid);
@@ -210,3 +200,27 @@ void Client::positonUpdated(const QGeoPositionInfo &info)
 }
 #endif
 
+void Client::readSettings() //читай
+{
+    //случайное название компании
+    QSettings settings("Matan inc gmbh", "Savelife"); 
+    
+    sIpAddress_ = settings.value("ip","91.221.60.166").toString();
+    sTelephone_ = settings.value("telephone","+79204023482").toString();
+}
+
+void Client::writeSettings() //пиши
+{
+    QSettings settings("Matan inc gmbh", "Savelife"); 
+    
+    sIpAddress_ = hostLineEdit->text();
+
+    settings.setValue("ip", sIpAddress_);
+    settings.setValue("telephone", sTelephone_);
+}
+
+void Client::closeEvent(QCloseEvent *e)
+{
+    writeSettings();
+    e->accept();
+}
