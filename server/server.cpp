@@ -10,7 +10,7 @@
 
 Server::Server() : _tcpServer(0)
 {
-    QSettings *settings = new QSettings("server.conf",QSettings::NativeFormat);
+     QSettings *settings = new QSettings("server.conf",QSettings::NativeFormat);
     _port=settings->value("net/port",51413).toInt();
     _mysqlHost=settings->value("mysql/hostname","localhost").toString();
     _mysqlUser=settings->value("mysql/user","").toString();
@@ -67,7 +67,7 @@ void Server::manageDataBase(QString proceededstr)
     QString endDb ="INSERT INTO `mobi` (`date`,`type`,`x`,`y`,`id_device`,`telephone`) VALUES (\'"+call_date+" "+call_time+"\',\'"+call_id+"\',\'"+coordx+"\',\'"+coordy+"\',\'"+device_id+"\',\'"+telephone+"\');";
     _mySqlDataBase.transaction();
     QSqlQuery query;
-    if(call_id.length()>0&&device_id.length()>0)
+    if(call_id!="0"&&device_id.length()>0)
         query.exec(endDb);
     _mySqlDataBase.commit();
 }
