@@ -1,0 +1,31 @@
+	<table border="0" width="900">
+	<tr><td colspan="6"><hr></td></tr>
+	<tr class="table_headers">
+	<td>Device ID</td>
+	<td>Latitude</td>
+	<td>Longitude</td>
+	<td>Signal type</td>
+	<td>Time and date</td>
+	<td>Map</td>
+	</tr>
+	<?php
+	while($res = mysql_fetch_array($result, MYSQL_BOTH)) { 
+		if(!isset($res['id_device'])) continue;
+			echo '<tr>'; 
+			$row[$i]['id_device'] = $res['id_device'];
+				echo '<td>'.$row[$i]['id_device'].'</td>';
+			$row[$i]['x'] = $res['x']; 
+				echo '<td>'.$row[$i]['x'].'</td>';
+			$row[$i]['y'] = $res['y']; 
+				echo '<td>'.$row[$i]['y'].'</td>';
+			$row[$i]['type'] = $res['type'];
+				echo '<td>'.$row[$i]['type'].'</td>';		
+			$row[$i]['date'] = $res['date']; 
+				echo '<td>'.Base::dateTransform($row[$i]['date']).'</td>';
+			echo '<td><a target="_blank" href="map.php?lat='.$row[$i]['x'].'&lgt='.$row[$i]['y'].'&action=show&date='.$row[$i]['date'].'&device_id='.$row[$i]['id_device'].'">Show Map</a></td>';	
+			echo '</tr>';
+			$i++;
+	} 
+	mysql_close($link);
+	echo '<tr><td colspan="6"><hr></td></tr></table><div class="table_headers">Total: <span id="num_of_rows">'.$i.'</span> results</div>';
+	?>
