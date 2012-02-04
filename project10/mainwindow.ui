@@ -59,7 +59,7 @@
          <bool>false</bool>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideLeft</enum>
@@ -259,6 +259,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>Kalneus Leonid</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="label_10">
                 <property name="text">
                  <string>Bardakov Artyom</string>
@@ -272,23 +279,6 @@
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>Inspiration Team:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_12">
-                <property name="text">
-                 <string>Kalneus Leonid</string>
                 </property>
                </widget>
               </item>
@@ -342,6 +332,13 @@
              </layout>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QScrollBar" name="verticalScrollBar">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

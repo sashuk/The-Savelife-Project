@@ -10,6 +10,10 @@
 
 MainWindow::MainWindow(QString path,QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), networkSession(0)
 {
+    mainStyleSheet = "QPushButton { border-style: outset; border-width: 2px; border-radius: 10px; border-color: black; } QTabWidget { background-color: white; } QLineEdit { border-style: outset; border-width: 2px; border-radius: 10px; }";
+    //setStyleSheet(mainStyleSheet);
+
+
     //Setting up user interface
     ui->setupUi(this);
 
@@ -45,14 +49,29 @@ MainWindow::MainWindow(QString path,QWidget *parent) : QMainWindow(parent), ui(n
 
     qDebug() << globIpAdress << "@" << globPort;
 
+#ifdef Q_OS_SYMBIAN
     sysInfo = new QSystemDeviceInfo(this);
-    QGeoPositionInfo::QGeoPositionInfo(info);
+  //  QGeoPositionInfo::QGeoPositionInfo(info);
+
     QGeoPositionInfoSource *source = QGeoPositionInfoSource::createDefaultSource(this);
+
     if(source)
     {
+        positonUpdated(source->lastKnownPosition());
+        source->setUpdateInterval(10000);
         connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positonUpdated(QGeoPositionInfo)));
-        source->requestUpdate();
+        source->startUpdates();
     }
+    else
+    {
+        //нету
+        QMessageBox::warning(this,"GPS is not available","sory");
+    }
+#else
+     coordx=QString::number(999);
+     coordy=QString::number(999);
+#endif
+
 
 QString ipAddress;
 QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
@@ -103,6 +122,8 @@ void MainWindow::sessionOpened() {
 
 void MainWindow::sendDataString(QString type)
 {
+
+
     globtype = type;
     phone1 = ui->lineEdit_3->text().toLatin1();
     phone2 = ui->lineEdit_4->text().toLatin1();
@@ -131,25 +152,7 @@ void MainWindow::sendDataString(QString type)
             timer->singleShot(8000,this,SLOT(send2Sms()));
         }
     }
-/*
-        addr.setType(QMessageAddress::Phone);
-        addr.setAddressee(phone1);
-        msg.setTo(addr);
-        msg.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy + " , Call id: " + type + ", IMEI: " + deviceid);
-        msg.setType(QMessage::Sms);
-        service.send(msg);
 
-        if ((phone3).length() > 0) {
-            addr.setType(QMessageAddress::Phone);
-            addr.setAddressee(phone3);
-            msg.setTo(addr);
-            msg.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy + " , Call id: " + type + ", IMEI: " + deviceid);
-            msg.setType(QMessage::Sms);
-            service.send(msg);
-            qDebug() << "Message to phone3 was sent";
-        }
-    }
-    */
     out<<rolltoserver.toLatin1();
     tcpSocket->abort();
     qDebug() << globIpAdress << "@" << globPort;

@@ -57,6 +57,7 @@ private slots:
     void send3Sms();
 
 private:
+    QString mainStyleSheet;
     Ui::MainWindow *ui;
     QString deviceid;
     QString globtype;
