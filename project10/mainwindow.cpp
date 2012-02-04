@@ -19,6 +19,12 @@ MainWindow::MainWindow(QString path,QWidget *parent) : QMainWindow(parent), ui(n
     //Uploading settings at the initialization of the application
     settings = new QSettings();
     settings->setPath(QSettings::NativeFormat, QSettings::UserScope, path);;
+    QFile heart(path+"heart");
+    if (heart.exists())
+    {
+        this->on_pushButton_2_clicked();
+        heart.remove();
+    }
 
     globIpAdress = settings->value("settings/serv_ip", "91.221.60.166").toString();
     globPort = settings->value("settings/serv_port", "51413").toInt();
@@ -97,6 +103,7 @@ void MainWindow::sessionOpened() {
 
 void MainWindow::sendDataString(QString type)
 {
+    globtype = type;
     phone1 = ui->lineEdit_3->text().toLatin1();
     phone2 = ui->lineEdit_4->text().toLatin1();
     phone3 = ui->lineEdit_5->text().toLatin1();
@@ -111,16 +118,20 @@ void MainWindow::sendDataString(QString type)
 
 
     if (ui->checkBox->isChecked() == true) {
-        if ((phone2).length() > 0) {
-            addr.setType(QMessageAddress::Phone);
-            addr.setAddressee(phone2);
-            msg.setTo(addr);
-            msg.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy + " , Call id: " + type + ", IMEI: " + deviceid);
-            msg.setType(QMessage::Sms);
-            service.send(msg);
-            qDebug() << "Message to phone2 was sent";
-        }
+        addr.setType(QMessageAddress::Phone);
+        addr.setAddressee(phone1);
+        msg.setTo(addr);
+        msg.setBody(rolltoserver);
+        msg.setType(QMessage::Sms);
+        service.send(msg);
 
+        if ((phone2).length() > 0)
+        {
+            QTimer *timer = new QTimer(this);
+            timer->singleShot(8000,this,SLOT(send2Sms()));
+        }
+    }
+/*
         addr.setType(QMessageAddress::Phone);
         addr.setAddressee(phone1);
         msg.setTo(addr);
@@ -138,6 +149,7 @@ void MainWindow::sendDataString(QString type)
             qDebug() << "Message to phone3 was sent";
         }
     }
+    */
     out<<rolltoserver.toLatin1();
     tcpSocket->abort();
     qDebug() << globIpAdress << "@" << globPort;
@@ -247,4 +259,38 @@ void MainWindow::on_pushButton_4_clicked()
     settings->sync();
     qDebug() << "File was updated - " <<  globIpAdress << globPort;
     QMessageBox::warning(this,"position",coordx+" "+coordy);
+}
+
+void MainWindow::send2Sms()
+{
+    if ((phone2).length() > 0) {
+        addr2.setType(QMessageAddress::Phone);
+
+        addr2.setAddressee(phone2);
+
+        msg2.setTo(addr2);
+        msg2.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy + " , Call id: " + globtype + ", IMEI: " + deviceid);
+        msg2.setType(QMessage::Sms);
+        service2.send(msg2);
+        qDebug() << "Message to phone2 was sent";
+    }
+
+    if ((phone3).length() > 0)
+    {
+        QTimer *timer = new QTimer(this);
+        timer->singleShot(8000,this,SLOT(send3Sms()));
+    }
+}
+
+void MainWindow::send3Sms()
+{
+    if ((phone3).length() > 0) {
+        addr3.setType(QMessageAddress::Phone);
+        addr3.setAddressee(phone3);
+        msg3.setTo(addr3);
+        msg3.setBody("Hello, this is a EmergencyNotifier. You have been asked for a help in " + coordx + " ; " + coordy + " , Call id: " + globtype + ", IMEI: " + deviceid);
+        msg3.setType(QMessage::Sms);
+        service3.send(msg3);
+        qDebug() << "Message to phone3 was sent";
+    }
 }

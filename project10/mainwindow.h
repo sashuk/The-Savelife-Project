@@ -53,10 +53,13 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
     void on_pushButton_4_clicked();
+    void send2Sms();
+    void send3Sms();
 
 private:
     Ui::MainWindow *ui;
     QString deviceid;
+    QString globtype;
     QString coordx;
     QString coordy;
     QTcpSocket *tcpSocket;
@@ -65,8 +68,14 @@ private:
     QNetworkSession *networkSession;
     QSystemDeviceInfo *sysInfo;
     QMessage msg;
+    QMessage msg2;
+    QMessage msg3;
     QMessageAddress addr;
+    QMessageAddress addr2;
+    QMessageAddress addr3;
     QMessageService service;
+    QMessageService service2;
+    QMessageService service3;
     int info_code;
     QString globIpAdress;
     quint16 globPort;
